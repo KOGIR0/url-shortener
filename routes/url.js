@@ -12,16 +12,14 @@ try {
     console.log(e);
 }
 
-function isValidUrl() {
-    let url;
-  
+function isValidUrl(url) {
     try {
-      url = new URL(string);
+      new URL(url);
     } catch (_) {
       return false;  
     }
   
-    return url.protocol === "http:" || url.protocol === "https:";
+    return true;
 }
 
 // GET redirect from shorturl to url
@@ -29,9 +27,6 @@ router.get('/:shorturl', async (req, res) => {
     const urlMap = await UrlMap.findOne({shortUrl: req.params.shorturl});
     if(urlMap) {
         let url = urlMap.url;
-        if(!url.toString().includes('https://')) {
-            url = "https://" + url;
-        }
         res.redirect(url);
     } else {
         res.status(404).send("Unknown url");
@@ -39,23 +34,29 @@ router.get('/:shorturl', async (req, res) => {
 });
 
 // POST url to shorten, accepts query paretr with custom short url
-router.post('/:url', async (req, res) => {
-    if(!isValidUrl(req.params.url)) {
+router.post('/', async (req, res) => {
+    if(!req.body.url) {
+        res.status(400).send("No url provided");
+    }
+    let url = req.body.url;
+    if(!url.includes("https://") || !url.includes("http://")) {
+        url = "https://" + url;
+    }
+    if(!isValidUrl(url)) {
         res.status(500).send("Invalid URL");
         return;
     }
-    let shortUrl = Date.now().toString(36);
-    if(req.query.shortUrl) {
-        shortUrl = req.query.shortUrl;
-    }
+    // create random short url from date or use custom one
+    let shortUrl = req.body.shortUrl ? req.body.shortUrl : Date.now().toString(36);
+
     let urlMap = await UrlMap.findOne({shortUrl: shortUrl});
     if(!urlMap) {
-        UrlMap.create({url: req.params.url, shortUrl: shortUrl}, (err, doc) => {
+        UrlMap.create({url: url, shortUrl: shortUrl}, (err, doc) => {
             if(err) return console.log(err);
             console.log("Object saved: ", doc);
         });
     } else {
-        UrlMap.updateOne({shortUrl: shortUrl}, {url: req.params.url, shortUrl: shortUrl}, (err, doc) => {
+        UrlMap.updateOne({shortUrl: shortUrl}, {url: url, shortUrl: shortUrl}, (err, doc) => {
             if(err) return console.log(err);
             console.log(doc);
         });
