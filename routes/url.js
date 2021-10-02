@@ -51,17 +51,15 @@ router.post('/', async (req, res) => {
 
     let urlMap = await UrlMap.findOne({shortUrl: shortUrl});
     if(!urlMap) {
-        UrlMap.create({url: url, shortUrl: shortUrl}, (err, doc) => {
+        UrlMap.create({url: url, shortUrl: shortUrl}, (err) => {
             if(err) return console.log(err);
-            console.log("Object saved: ", doc);
         });
     } else {
-        UrlMap.updateOne({shortUrl: shortUrl}, {url: url, shortUrl: shortUrl}, (err, doc) => {
+        UrlMap.updateOne({shortUrl: shortUrl}, {url: url, shortUrl: shortUrl}, (err) => {
             if(err) return console.log(err);
-            console.log(doc);
         });
     }
-    res.status(200).send(req.protocol + '://' + req.get('host') + '/' + shortUrl + '\n');
+    res.status(200).send({shortUrl: shortUrl});
 });
 
 export default router;
