@@ -24,6 +24,7 @@ function isValidUrl() {
     return url.protocol === "http:" || url.protocol === "https:";
 }
 
+// GET redirect from shorturl to url
 router.get('/:shorturl', async (req, res) => {
     const urlMap = await UrlMap.findOne({shortUrl: req.params.shorturl});
     if(urlMap) {
@@ -37,6 +38,7 @@ router.get('/:shorturl', async (req, res) => {
     }
 });
 
+// POST url to shorten, accepts query paretr with custom short url
 router.post('/:url', async (req, res) => {
     if(!isValidUrl(req.params.url)) {
         res.status(500).send("Invalid URL");
