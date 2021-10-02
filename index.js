@@ -16,8 +16,11 @@ try {
 app.get('/:shorturl', async (req, res) => {
     const urlMap = await UrlMap.findOne({shortUrl: req.params.shorturl});
     if(urlMap) {
-        const url = urlMap.url;
-        res.redirect("https://" + url);
+        let url = urlMap.url;
+        if(!url.toString().includes('https://')) {
+            url = "https://" + url;
+        }
+        res.redirect(url);
     } else {
         res.status(404).send("Unknown url");
     }
