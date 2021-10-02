@@ -15,23 +15,26 @@ try {
 
 app.get('/:shorturl', async (req, res) => {
     const urlMap = await UrlMap.findOne({shortUrl: req.params.shorturl});
-    const url = urlMap.url;
-    if(url) {
+    if(urlMap) {
+        const url = urlMap.url;
         res.redirect("https://" + url);
     } else {
         res.status(404).send("Unknown url");
     }
 });
 
-app.post('/:url', (req, res) => {
+app.post('/:url', async (req, res) => {
     let shortUrl = Date.now().toString(36);
     if(req.query.shortUrl) {
         shortUrl = req.query.shortUrl;
     }
-    UrlMap.create({url: req.params.url, shortUrl: shortUrl}, (err, doc) => {
-        if(err) return console.log(err);
-        console.log("Object saved: ", doc);
-    });
+    let urlMap = await UrlMap.findOne({url: req.params.url, shortUrl: shortUrl});
+    if(!urlMap) {
+        UrlMap.create({url: req.params.url, shortUrl: shortUrl}, (err, doc) => {
+            if(err) return console.log(err);
+            console.log("Object saved: ", doc);
+        });
+    }
     res.status(200).send(req.protocol + '://' + req.get('host') + '/' + shortUrl + '\n');
 });
 

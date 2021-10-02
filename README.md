@@ -1,7 +1,6 @@
 # URL shortener app
 -----
 
-
 ## Start
 
 npm start
