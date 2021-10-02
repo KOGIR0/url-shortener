@@ -4,10 +4,6 @@ let shortUrls = {};
 
 let app = express();
 
-app.get('/', (req, res) => {
-    res.send("Hello, world");
-});
-
 app.get('/:shorturl', (req, res) => {
     if(shortUrls[req.params.shorturl]) {
         res.redirect("https://" + shortUrls[req.params.shorturl]);
