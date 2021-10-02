@@ -1,26 +1,38 @@
 import express from 'express';
-
-let shortUrls = {};
+import {UrlMap} from './Models.js';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+dotenv.config();
 
 let app = express();
 
-app.get('/:shorturl', (req, res) => {
-    if(shortUrls[req.params.shorturl]) {
-        res.redirect("https://" + shortUrls[req.params.shorturl]);
+try {
+    mongoose.connect(process.env.MONGODB_URI);
+} catch (e) {
+    console.log("Error connecting to db: ");
+    console.log(e);
+}
+
+app.get('/:shorturl', async (req, res) => {
+    const urlMap = await UrlMap.findOne({shortUrl: req.params.shorturl});
+    const url = urlMap.url;
+    if(url) {
+        res.redirect("https://" + url);
     } else {
         res.status(404).send("Unknown url");
     }
 });
 
 app.post('/:url', (req, res) => {
-    const shortUrl = Date.now().toString(36);
+    let shortUrl = Date.now().toString(36);
     if(req.query.shortUrl) {
-        shortUrls[req.query.shortUrl] = req.params.url;
-        res.status(200).send(req.protocol + '://' + req.get('host') + '/' + req.query.shortUrl + '\n');
-    } else {
-        shortUrls[shortUrl] = req.query.url;
-        res.status(200).send(req.protocol + '://' + req.get('host') + '/' + shortUrl + '\n');
+        shortUrl = req.query.shortUrl;
     }
+    UrlMap.create({url: req.params.url, shortUrl: shortUrl}, (err, doc) => {
+        if(err) return console.log(err);
+        console.log("Object saved: ", doc);
+    });
+    res.status(200).send(req.protocol + '://' + req.get('host') + '/' + shortUrl + '\n');
 });
 
 app.listen(3000, () => {
