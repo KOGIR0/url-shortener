@@ -12,6 +12,18 @@ try {
     console.log(e);
 }
 
+function isValidUrl() {
+    let url;
+  
+    try {
+      url = new URL(string);
+    } catch (_) {
+      return false;  
+    }
+  
+    return url.protocol === "http:" || url.protocol === "https:";
+}
+
 router.get('/:shorturl', async (req, res) => {
     const urlMap = await UrlMap.findOne({shortUrl: req.params.shorturl});
     if(urlMap) {
@@ -26,15 +38,24 @@ router.get('/:shorturl', async (req, res) => {
 });
 
 router.post('/:url', async (req, res) => {
+    if(!isValidUrl(req.params.url)) {
+        res.status(500).send("Invalid URL");
+        return;
+    }
     let shortUrl = Date.now().toString(36);
     if(req.query.shortUrl) {
         shortUrl = req.query.shortUrl;
     }
-    let urlMap = await UrlMap.findOne({url: req.params.url, shortUrl: shortUrl});
+    let urlMap = await UrlMap.findOne({shortUrl: shortUrl});
     if(!urlMap) {
         UrlMap.create({url: req.params.url, shortUrl: shortUrl}, (err, doc) => {
             if(err) return console.log(err);
             console.log("Object saved: ", doc);
+        });
+    } else {
+        UrlMap.updateOne({shortUrl: shortUrl}, {url: req.params.url, shortUrl: shortUrl}, (err, doc) => {
+            if(err) return console.log(err);
+            console.log(doc);
         });
     }
     res.status(200).send(req.protocol + '://' + req.get('host') + '/' + shortUrl + '\n');

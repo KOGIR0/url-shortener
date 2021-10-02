@@ -3,6 +3,7 @@
 
 ## Start
 
+before starting app create .env file and create MONGODB_URI variable
 npm start
 
 -----
