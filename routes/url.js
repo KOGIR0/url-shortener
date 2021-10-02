@@ -13,13 +13,10 @@ try {
 }
 
 function isValidUrl(url) {
-    try {
-      new URL(url);
-    } catch (_) {
-      return false;  
-    }
+    let pattern = /(ftp|http|https):\/\/(w+).(\w+).(\w+)$/;
+    if(pattern.test(url)) return true;
   
-    return true;
+    return false;
 }
 
 // GET redirect from shorturl to url
@@ -43,7 +40,7 @@ router.post('/', async (req, res) => {
         url = "https://" + url;
     }
     if(!isValidUrl(url)) {
-        res.status(500).send("Invalid URL");
+        res.status(400).send("Invalid URL");
         return;
     }
     // create random short url from date or use custom one
@@ -54,12 +51,13 @@ router.post('/', async (req, res) => {
         UrlMap.create({url: url, shortUrl: shortUrl}, (err) => {
             if(err) return console.log(err);
         });
+        res.status(200).send({shortUrl: shortUrl});
     } else {
         UrlMap.updateOne({shortUrl: shortUrl}, {url: url, shortUrl: shortUrl}, (err) => {
             if(err) return console.log(err);
         });
+        res.status(200).send({shortUrl: shortUrl, updated: urlMap});
     }
-    res.status(200).send({shortUrl: shortUrl});
 });
 
 export default router;

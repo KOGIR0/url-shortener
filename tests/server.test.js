@@ -31,3 +31,11 @@ test('POST valid /:url with custom short url', async () => {
             .expect('Location', 'https://www.google.com')
         })
 });
+
+test('POST invalid /:url', async () => {
+    await request(app)
+        .post("/")
+        .send({"url": "google", "shortUrl": "url"})
+        .set("Content-Type", "application/json")
+        .expect(400, "Invalid URL")
+});
