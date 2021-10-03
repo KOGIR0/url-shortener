@@ -55,6 +55,16 @@ test('POST invalid /:url', async () => {
         .send({"url": "google", "shortUrl": "url"})
         .set("Content-Type", "application/json")
         .expect(400, "Invalid URL")
+    await request(app)
+        .post("/")
+        .send({"url": "g@oogle.com", "shortUrl": "url"})
+        .set("Content-Type", "application/json")
+        .expect(400, "Invalid URL")
+    await request(app)
+        .post("/")
+        .send({"url": "g$#oogle.com", "shortUrl": "url"})
+        .set("Content-Type", "application/json")
+        .expect(400, "Invalid URL")
 });
 
 test('POST same shortUrl twice', async () => {

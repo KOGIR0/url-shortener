@@ -13,7 +13,13 @@ try {
 }
 
 function isValidUrl(url) {
-    if(url.split('.').length === 2 || url.split('.').length === 3) return true;
+    if(url.split('.').length >= 2)
+    {
+        let regexpURL = /^[^ "@%#$*]+$/; 
+        if(regexpURL.test(url)) {
+            return true;
+        } 
+    }
   
     return false;
 }
