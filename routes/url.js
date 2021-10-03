@@ -13,8 +13,7 @@ try {
 }
 
 function isValidUrl(url) {
-    let pattern = /(ftp|http|https):\/\/(w+).(\w+).(\w+)$/;
-    if(pattern.test(url)) return true;
+    if(url.split('.').length === 2 || url.split('.').length === 3) return true;
   
     return false;
 }
@@ -46,7 +45,10 @@ router.post('/', async (req, res) => {
     // create random short url from date or use custom one
     let shortUrl = req.body.shortUrl ? req.body.shortUrl : Date.now().toString(36);
 
-    let urlMap = await UrlMap.findOne({shortUrl: shortUrl});
+    let urlMap = await UrlMap.findOne({shortUrl: shortUrl})
+    .catch(e => {
+        console.log(e);
+    })
     if(!urlMap) {
         UrlMap.create({url: url, shortUrl: shortUrl}, (err) => {
             if(err) return console.log(err);

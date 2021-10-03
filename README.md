@@ -14,12 +14,12 @@ npm start
 Redirects from /surl to www.google.com
 #### custom url
 REQEST
-curl -X POST http://localhost:3000/www.google.com?shortUrl=surl
+curl -X POST -H "Content-Type: application/json" --data '{"url": "www.google.com", "shortUrl": "url"}' http://localhost:3000/
 RESPONSE
-surl
+url
 
 #### random url
 REQUEST
-curl -X POST http://localhost:3000/www.google.com
+curl -X POST -H "Content-Type: application/json" --data '{"url": "www.google.com"}' http://localhost:3000/
 RESPONSE
 generated url
