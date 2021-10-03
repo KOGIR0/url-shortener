@@ -39,6 +39,7 @@ router.get('/:shorturl', async (req, res) => {
 router.post('/', async (req, res) => {
     if(!req.body.url) {
         res.status(400).send("No url provided");
+        return;
     }
     let url = req.body.url;
     if(!url.includes("https://") || !url.includes("http://")) {

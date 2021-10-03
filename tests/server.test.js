@@ -20,17 +20,16 @@ beforeEach(async () => {
 });
 
 test('POST valid /:url with random short url', async () => {
-    await request(app)
+    let resp = await request(app)
         .post("/")
         .send({"url": "www.google.com"})
         .set("Content-Type", "application/json")
         .expect(200)
-        .then(async resp => {
-            await request(app)
-            .get("/" + resp.body.shortUrl)
-            .expect(302)
-            .expect('Location', 'https://www.google.com')
-        })
+
+    await request(app)
+        .get("/" + resp.body.shortUrl)
+        .expect(302)
+        .expect('Location', 'https://www.google.com')
 });
 
 test('POST valid /:url with custom short url', async () => {
@@ -83,3 +82,9 @@ test('POST same shortUrl twice', async () => {
         .expect(302)
         .expect("Location", "https://yandex.com")
 });
+
+test('POST with no data provided', async () => {
+    await request(app)
+        .post("/")
+        .expect(400)
+})
