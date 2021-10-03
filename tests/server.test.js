@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 
 beforeEach(async () => {
     try {
-        mongoose.connect(process.env.MONGODB_URI);
+        await mongoose.connect(process.env.MONGODB_URI);
     } catch (e) {
         console.log("Error connecting to db: ");
         console.log(e);
