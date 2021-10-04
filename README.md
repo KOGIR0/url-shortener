@@ -8,6 +8,15 @@
 npm start - для запуска приложения \
 npm run test - для запуска тестов
 
+Для создания короткого URL необходимо сделать POST запрос с json данными \
+{"url": {url который вы хотите сделать короче}} \
+или \
+{"url": {url который вы хотите сделать короче}, "shortUrl": {короткий url который вы хотите назначить}} \
+Post запрос возвращает json вида {"shortUrl": {url}} \
+или \
+{"shortUrl": {url}, "updated": {данные обновленного url}}, если вы наначаете один и тот же коротний url для сайта \
+После этого при прерходе на /{короткий url} вы будете перенаправлены на сайт назначенный на указанный короткий url
+
 ## Prerequisites
 
 before starting app create .env file and create MONGODB_URI variable with connection to mongodb url
